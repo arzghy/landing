@@ -884,13 +884,35 @@ h6 {
 }
 
 /*--------------------------------------------------------------
-# Global Page Titles & Breadcrumbs
+# Global Page Titles & Breadcrumbs (Updated with Hero Background)
 --------------------------------------------------------------*/
 .page-title {
   color: var(--default-color);
-  background-color: var(--background-color);
+  /* Menggunakan gradient yang sama dengan Hero Section di index.html */
+  background: linear-gradient(135deg, var(--surface-color) 0%, color-mix(in srgb, var(--accent-color), transparent 95%) 100%);
   position: relative;
   padding-top: 100px;
+  overflow: hidden; /* Penting agar background tidak bocor keluar */
+}
+
+/* Menambahkan elemen background gambar (sama seperti .hero::before) */
+.page-title::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("../img/bg/abstract-bg-3.webp") center/cover;
+  opacity: 0.08; /* Transparansi agar tidak terlalu dominan */
+  z-index: 0;
+}
+
+/* Memastikan teks dan navigasi tetap berada di atas background */
+.page-title .heading,
+.page-title nav {
+  position: relative;
+  z-index: 1;
 }
 
 .page-title .heading {
@@ -900,9 +922,12 @@ h6 {
 .page-title .heading h1 {
   font-size: 38px;
   font-weight: 500;
+  /* Opsional: Ubah warna judul agar lebih kontras jika perlu */
+  color: var(--heading-color); 
 }
 
 .page-title nav {
+  /* Membuat background breadcrumb sedikit transparan agar menyatu */
   background-color: color-mix(in srgb, var(--default-color), transparent 96%);
   padding: 20px 0;
 }
@@ -6216,4 +6241,185 @@ section,
   padding-top: 60px;
   padding-bottom: 60px;
   /* Add your styles here */
+}
+
+/*--------------------------------------------------------------
+# Love Timeline & About Page Styles
+--------------------------------------------------------------*/
+
+/* Timeline Styles */
+.timeline {
+  position: relative;
+  padding: 0;
+  list-style: none;
+}
+
+.timeline:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 40px;
+  width: 2px;
+  margin-left: -1.5px;
+  background-color: var(--accent-color);
+  opacity: 0.2;
+}
+
+.timeline>li {
+  position: relative;
+  margin-bottom: 50px;
+  min-height: 50px;
+}
+
+.timeline>li:before,
+.timeline>li:after {
+  content: " ";
+  display: table;
+}
+
+.timeline>li:after {
+  clear: both;
+}
+
+.timeline>li .timeline-panel {
+  float: right;
+  position: relative;
+  width: 100%;
+  padding: 0 20px 0 100px;
+  text-align: left;
+}
+
+.timeline>li .timeline-image {
+  z-index: 100;
+  position: absolute;
+  left: 0;
+  width: 80px;
+  height: 80px;
+  /* Border Merah (Bulatan Luar) */
+  border: 7px solid #FF0000;
+  border-radius: 100%;
+  /* Background Putih (Bulatan Dalam) */
+  background-color: #ffffff;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  font-size: 2.5rem;
+}
+
+.timeline>li .timeline-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.timeline>li .timeline-heading h4 {
+  margin-top: 0;
+  color: var(--heading-color);
+  font-weight: 700;
+}
+
+.timeline>li .timeline-heading .subheading {
+  color: #FF0000;
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.timeline>li .timeline-body>p,
+.timeline>li .timeline-body>ul {
+  margin-bottom: 0;
+  color: var(--default-color);
+}
+
+@media (min-width: 768px) {
+  .timeline:before {
+    left: 50%;
+  }
+
+  .timeline>li {
+    margin-bottom: 100px;
+    min-height: 100px;
+  }
+
+  .timeline>li .timeline-panel {
+    float: left;
+    width: 41%;
+    padding: 0 20px 20px 30px;
+    text-align: right;
+  }
+
+  .timeline>li .timeline-image {
+    left: 50%;
+    width: 100px;
+    height: 100px;
+    margin-left: -50px;
+  }
+
+  .timeline>li.timeline-inverted>.timeline-panel {
+    float: right;
+    text-align: left;
+    padding: 0 30px 20px 20px;
+  }
+}
+
+/* Animations */
+.heart-icon {
+  color: #FF0000;
+  animation: heartbeat 1.5s infinite;
+}
+
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.1); }
+  40% { transform: scale(1); }
+  60% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Image Wrapper Effects */
+.image-wrapper {
+  overflow: hidden;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.image-wrapper:hover {
+  transform: translateY(-5px);
+}
+
+.image-wrapper img {
+  transition: transform 0.5s ease;
+  width: 100%;
+  height: auto;
+}
+
+.image-wrapper:hover img {
+  transform: scale(1.05);
+}
+
+/* Overlay icon zoom */
+.image-wrapper a::after {
+  content: '\F658'; /* Icon Zoom Bi-Plus-Lg */
+  font-family: 'bootstrap-icons';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-size: 2rem;
+  color: white;
+  background: rgba(255, 0, 0, 0.6);
+  padding: 15px;
+  border-radius: 50%;
+  transition: 0.3s ease;
+  pointer-events: none;
+}
+
+.image-wrapper a:hover::after {
+  transform: translate(-50%, -50%) scale(1);
 }
