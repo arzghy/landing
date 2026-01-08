@@ -6423,3 +6423,126 @@ section,
 .image-wrapper a:hover::after {
   transform: translate(-50%, -50%) scale(1);
 }
+
+/* --------------------------------------------------------------
+# Halaman Musik (Music Page Styles)
+-------------------------------------------------------------- */
+
+/* Card Player Utama */
+.music-player-card {
+  background: var(--surface-color);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--default-color), transparent 90%);
+  margin-bottom: 40px;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Container Iframe Spotify */
+.iframe-container {
+  border-radius: 15px;
+  overflow: hidden;
+  background: #000;
+  min-height: 352px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.empty-player-text {
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Form Input */
+.add-playlist-wrapper {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 15px;
+  margin-top: 20px;
+}
+
+/* --- GAYA GRID (Layout 4 Kolom) --- */
+.playlist-grid {
+  display: grid;
+  /* Membuat 4 kolom. Otomatis turun baris jika lebih */
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 20px;
+  padding-bottom: 20px;
+}
+
+/* Responsif: Tablet (2 kolom) */
+@media (max-width: 992px) {
+  .playlist-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Responsif: HP (1 kolom) */
+@media (max-width: 576px) {
+  .playlist-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Kartu Playlist */
+.playlist-card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  border: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+  height: 100%; 
+}
+
+.playlist-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  border-color: var(--accent-color);
+}
+
+.playlist-card h5 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--heading-color);
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playlist-card .date {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.playlist-card .actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.playlist-card .btn {
+  flex: 1;
+  border-radius: 50px;
+  font-size: 13px;
+}
+
+/* Indikator kosong */
+.empty-state-grid {
+  grid-column: 1 / -1; 
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  background: #f9f9f9;
+  border-radius: 15px;
+  border: 2px dashed #ddd;
+}

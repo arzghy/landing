@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let stopwatchInterval;
     let elapsedTime = 0;
     let isRunning = false;
-    let startTime = 0; // Timestamp kapan start ditekan (adjusted)
+    let startTime = 0;
 
     const displayElement = document.getElementById('stopwatch-display');
     const btnStart = document.getElementById('btn-start');
@@ -210,14 +210,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fungsi Start
     function startStopwatch() {
       if (!isRunning) {
-        // Hitung waktu mulai (Sekarang dikurangi waktu yang sudah berlalu sebelumnya)
         startTime = Date.now() - elapsedTime;
-        
-        // Simpan state ke LocalStorage
         localStorage.setItem('sw_startTime', startTime);
         localStorage.setItem('sw_isRunning', 'true');
 
-        // Jalankan interval
         stopwatchInterval = setInterval(() => {
           elapsedTime = Date.now() - startTime;
           if (displayElement) displayElement.textContent = formatTime(elapsedTime);
@@ -234,8 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(stopwatchInterval);
         isRunning = false;
         
-        // Simpan waktu terakhir saat pause agar tidak hilang saat refresh
-        localStorage.setItem('sw_elapsedTime', elapsedTime); // Simpan waktu beku
+        localStorage.setItem('sw_elapsedTime', elapsedTime);
         localStorage.setItem('sw_isRunning', 'false');
         
         updateButtons();
@@ -244,41 +239,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fungsi Reset
     function resetStopwatch() {
-      stopStopwatch(); // Pastikan berhenti dulu
+      stopStopwatch();
       elapsedTime = 0;
       if (displayElement) displayElement.textContent = "00:00:00";
       
-      // Hapus data dari LocalStorage
       localStorage.removeItem('sw_startTime');
       localStorage.removeItem('sw_elapsedTime');
       localStorage.removeItem('sw_isRunning');
     }
 
-    // --- 3. Inisialisasi Saat Halaman Dimuat (Load State) ---
+    // Inisialisasi Saat Halaman Dimuat
     function initStopwatch() {
       const storedIsRunning = localStorage.getItem('sw_isRunning');
       const storedStartTime = localStorage.getItem('sw_startTime');
       const storedElapsedTime = localStorage.getItem('sw_elapsedTime');
 
       if (storedIsRunning === 'true' && storedStartTime) {
-        // KASUS 1: Stopwatch sedang berjalan saat user meninggalkan/refresh halaman
         startTime = parseInt(storedStartTime);
-        elapsedTime = Date.now() - startTime; // Hitung selisih waktu nyata saat ini dengan waktu start
+        elapsedTime = Date.now() - startTime;
         
-        // Update tampilan langsung agar tidak 00:00:00
         if (displayElement) displayElement.textContent = formatTime(elapsedTime);
         
         isRunning = true;
         updateButtons();
 
-        // Lanjutkan interval
         stopwatchInterval = setInterval(() => {
           elapsedTime = Date.now() - startTime;
           if (displayElement) displayElement.textContent = formatTime(elapsedTime);
         }, 100);
 
       } else if (storedElapsedTime) {
-        // KASUS 2: Stopwatch dalam keadaan PAUSE (Stop) saat user meninggalkan halaman
         elapsedTime = parseInt(storedElapsedTime);
         if (displayElement) displayElement.textContent = formatTime(elapsedTime);
         isRunning = false;
@@ -286,12 +276,187 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Jalankan inisialisasi
     initStopwatch();
 
-    // --- 4. Event Listeners ---
     if (btnStart) btnStart.addEventListener('click', startStopwatch);
     if (btnStop) btnStop.addEventListener('click', stopStopwatch);
     if (btnReset) btnReset.addEventListener('click', resetStopwatch);
   }
 });
+
+
+/**
+ * ==========================================================================
+ * LOGIKA HALAMAN MUSIK (Untuk musik.html)
+ * ==========================================================================
+ */
+
+// Variabel Global
+let myPlaylists = [];
+
+// Fungsi Render (Global agar bisa dipanggil jika perlu)
+function renderPlaylists() {
+  const container = document.getElementById('playlistListContainer');
+  const countBadge = document.getElementById('countBadge');
+  
+  // Jika elemen tidak ditemukan (bukan halaman musik), berhenti
+  if (!container || !countBadge) return;
+
+  countBadge.innerText = myPlaylists.length;
+  container.innerHTML = '';
+
+  if (myPlaylists.length === 0) {
+    container.innerHTML = '<div class="empty-state-grid">Belum ada playlist tersimpan. Tambahkan di atas!</div>';
+    return;
+  }
+
+  // Loop data playlist
+  myPlaylists.forEach((playlist, index) => {
+    const cardDiv = document.createElement('div');
+    cardDiv.className = 'playlist-card';
+    
+    // UBAH DISINI: Mengganti class warna hijau (success) menjadi accent (merah)
+    cardDiv.innerHTML = `
+      <div>
+        <div class="d-flex align-items-center mb-2">
+          <i class="bi bi-music-note-list text-accent fs-4 me-2"></i> <h5>${playlist.name}</h5>
+        </div>
+        <span class="date"><i class="bi bi-calendar3 me-1"></i> ${playlist.date}</span>
+      </div>
+      
+      <div class="actions">
+        <button class="btn btn-outline-accent" onclick="playPlaylist(${index})">
+          <i class="bi bi-play-fill"></i> Putar
+        </button>
+        <button class="btn btn-outline-danger" onclick="deletePlaylist(${index})">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+    `;
+    container.appendChild(cardDiv);
+  });
+}
+
+// Fungsi Tambah Playlist (Global)
+window.addPlaylist = function() {
+  const nameInput = document.getElementById('inputName');
+  const urlInput = document.getElementById('inputUrl');
+  
+  if (!nameInput || !urlInput) {
+    console.error("Input element tidak ditemukan!");
+    return;
+  }
+
+  let name = nameInput.value.trim();
+  let url = urlInput.value.trim();
+
+  if (!url) {
+    alert("Mohon masukkan link Spotify!");
+    return;
+  }
+
+  // Validasi link
+  if (!url.includes('spotify.com')) {
+    alert("Link tidak valid. Pastikan link dari Spotify (contoh: https://open.spotify.com/playlist/...).");
+    return;
+  }
+
+  if (!name) {
+    name = "Playlist Musik " + (myPlaylists.length + 1);
+  }
+
+  // Logic Konversi Link ke Embed
+  let embedUrl = url;
+  if (!url.includes('/embed/')) {
+    embedUrl = url.replace('open.spotify.com/', 'open.spotify.com/embed/');
+  }
+  
+  embedUrl = embedUrl.split('?')[0];
+
+  const newPlaylist = {
+    name: name,
+    url: embedUrl,
+    date: new Date().toLocaleDateString('id-ID')
+  };
+
+  myPlaylists.push(newPlaylist);
+  saveToStorage();
+  renderPlaylists();
+
+  // Reset Form
+  nameInput.value = '';
+  urlInput.value = '';
+  
+  // Putar playlist baru
+  window.playPlaylist(myPlaylists.length - 1);
+};
+
+// Fungsi Hapus (Global)
+window.deletePlaylist = function(index) {
+  if (confirm('Yakin ingin menghapus playlist ini dari daftar?')) {
+    myPlaylists.splice(index, 1);
+    saveToStorage();
+    renderPlaylists();
+  }
+};
+
+// Fungsi Putar (Global)
+window.playPlaylist = function(index) {
+  const playlist = myPlaylists[index];
+  const playerContainer = document.getElementById('mainPlayer');
+  
+  if(playerContainer) {
+    playerContainer.innerHTML = `
+      <iframe style="border-radius:12px" src="${playlist.url}" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    `;
+    
+    // Scroll smooth ke player
+    const card = document.querySelector('.music-player-card');
+    if(card) card.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+
+// Simpan ke LocalStorage
+function saveToStorage() {
+  localStorage.setItem('laksmitaSpotifyPlaylists', JSON.stringify(myPlaylists));
+}
+
+// Inisialisasi Halaman Musik
+function initMusicPage() {
+  const container = document.getElementById('playlistListContainer');
+  if (!container) return; // Bukan halaman musik, keluar.
+
+  // --- PLAYLIST DEFAULT (Permanen) ---
+  const defaultPlaylists = [
+    {
+      name: "Lagu Galau Indonesia",
+      url: "https://open.spotify.com/embed/playlist/37i9dQZF1DX50QitC6McUH", 
+      date: "Rekomendasi Admin"
+    },
+    {
+      name: "Top Hits Global",
+      url: "https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M",
+      date: "Rekomendasi Admin"
+    }
+  ];
+
+  // Cek LocalStorage
+  let savedData = localStorage.getItem('laksmitaSpotifyPlaylists');
+
+  if (savedData) {
+      myPlaylists = JSON.parse(savedData);
+  } else {
+      myPlaylists = defaultPlaylists;
+  }
+
+  // Render awal
+  renderPlaylists();
+
+  // Putar yang pertama jika ada
+  if (myPlaylists.length > 0) {
+    window.playPlaylist(0);
+  }
+}
+
+// Jalankan saat DOM siap
+document.addEventListener("DOMContentLoaded", initMusicPage);
