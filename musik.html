@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Laksmita</title>
+  <title>Laksmita - Musik</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
 
@@ -62,7 +62,7 @@
         <div class="container">
           <div class="row d-flex justify-content-center text-center">
             <div class="col-lg-8">
-              <h1 class="heading-title">Daftar Putar Spotify</h1>
+              <h1 class="heading-title">Musik</h1>
               <p class="mb-0">
                 Putar musik favoritmu langsung dari sini. Simpan playlist terbaikmu untuk didengarkan kapan saja.
               </p>
@@ -78,7 +78,9 @@
           </ol>
         </div>
       </nav>
-    </div><section id="music" class="music section">
+    </div>
+
+    <section id="music" class="music section">
       <div class="container" data-aos="fade-up" data-aos-delay="100">
         
         <div class="row">
@@ -104,10 +106,10 @@
                     <input type="text" id="inputName" class="form-control" placeholder="Nama Playlist (Opsional)">
                   </div>
                   <div class="col-md-6">
-                    <input type="text" id="inputUrl" class="form-control" placeholder="Link Spotify (https://open.spotify.com/embed/playlist/[PLAYLIST_ID]?utm_source=generator...)" required>
+                    <input type="text" id="inputUrl" class="form-control" placeholder="Link Spotify (https://open.spotify.com/playlist/...)" required>
                   </div>
                   <div class="col-md-2">
-                    <button onclick="addPlaylist()" class="btn btn-success w-100">
+                    <button id="btnSavePlaylist" class="btn btn-success w-100">
                       <i class="bi bi-plus-lg"></i> Simpan
                     </button>
                   </div>

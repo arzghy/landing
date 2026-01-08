@@ -80,13 +80,17 @@
       window.scrollY > 100 ? scrollTop.classList.add('active') : scrollTop.classList.remove('active');
     }
   }
-  scrollTop.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
+  
+  // FIX: Cek scrollTop ada sebelum addEventListener
+  if (scrollTop) {
+    scrollTop.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
     });
-  });
+  }
 
   window.addEventListener('load', toggleScrollTop);
   document.addEventListener('scroll', toggleScrollTop);
@@ -95,26 +99,32 @@
    * Animation on scroll function and init
    */
   function aosInit() {
-    AOS.init({
-      duration: 600,
-      easing: 'ease-in-out',
-      once: true,
-      mirror: false
-    });
+    if (typeof AOS !== 'undefined') {
+      AOS.init({
+        duration: 600,
+        easing: 'ease-in-out',
+        once: true,
+        mirror: false
+      });
+    }
   }
   window.addEventListener('load', aosInit);
 
   /**
    * Initiate glightbox
    */
-  const glightbox = GLightbox({
-    selector: '.glightbox'
-  });
+  if (typeof GLightbox !== 'undefined') {
+    const glightbox = GLightbox({
+      selector: '.glightbox'
+    });
+  }
 
   /**
    * Initiate Pure Counter
    */
-  new PureCounter();
+  if (typeof PureCounter !== 'undefined') {
+    new PureCounter();
+  }
 
   /**
    * Init swiper sliders
@@ -291,140 +301,15 @@ document.addEventListener('DOMContentLoaded', () => {
  * ==========================================================================
  */
 
-// Variabel Global
-let myPlaylists = [];
-
-// Fungsi Render (Global agar bisa dipanggil jika perlu)
-function renderPlaylists() {
-  const container = document.getElementById('playlistListContainer');
-  const countBadge = document.getElementById('countBadge');
-  
-  // Jika elemen tidak ditemukan (bukan halaman musik), berhenti
-  if (!container || !countBadge) return;
-
-  countBadge.innerText = myPlaylists.length;
-  container.innerHTML = '';
-
-  if (myPlaylists.length === 0) {
-    container.innerHTML = '<div class="empty-state-grid">Belum ada playlist tersimpan. Tambahkan di atas!</div>';
-    return;
-  }
-
-  // Loop data playlist
-  myPlaylists.forEach((playlist, index) => {
-    const cardDiv = document.createElement('div');
-    cardDiv.className = 'playlist-card';
-    
-    // UBAH DISINI: Mengganti class warna hijau (success) menjadi accent (merah)
-    cardDiv.innerHTML = `
-      <div>
-        <div class="d-flex align-items-center mb-2">
-          <i class="bi bi-music-note-list text-accent fs-4 me-2"></i> <h5>${playlist.name}</h5>
-        </div>
-        <span class="date"><i class="bi bi-calendar3 me-1"></i> ${playlist.date}</span>
-      </div>
-      
-      <div class="actions">
-        <button class="btn btn-outline-accent" onclick="playPlaylist(${index})">
-          <i class="bi bi-play-fill"></i> Putar
-        </button>
-        <button class="btn btn-outline-danger" onclick="deletePlaylist(${index})">
-          <i class="bi bi-trash"></i>
-        </button>
-      </div>
-    `;
-    container.appendChild(cardDiv);
-  });
-}
-
-// Fungsi Tambah Playlist (Global)
-window.addPlaylist = function() {
-  const nameInput = document.getElementById('inputName');
-  const urlInput = document.getElementById('inputUrl');
-  
-  if (!nameInput || !urlInput) {
-    console.error("Input element tidak ditemukan!");
-    return;
-  }
-
-  let name = nameInput.value.trim();
-  let url = urlInput.value.trim();
-
-  if (!url) {
-    alert("Mohon masukkan link Spotify!");
-    return;
-  }
-
-  // Validasi link
-  if (!url.includes('spotify.com')) {
-    alert("Link tidak valid. Pastikan link dari Spotify (contoh: https://open.spotify.com/playlist/...).");
-    return;
-  }
-
-  if (!name) {
-    name = "Playlist Musik " + (myPlaylists.length + 1);
-  }
-
-  // Logic Konversi Link ke Embed
-  let embedUrl = url;
-  if (!url.includes('/embed/')) {
-    embedUrl = url.replace('open.spotify.com/', 'open.spotify.com/embed/');
-  }
-  
-  embedUrl = embedUrl.split('?')[0];
-
-  const newPlaylist = {
-    name: name,
-    url: embedUrl,
-    date: new Date().toLocaleDateString('id-ID')
-  };
-
-  myPlaylists.push(newPlaylist);
-  saveToStorage();
-  renderPlaylists();
-
-  // Reset Form
-  nameInput.value = '';
-  urlInput.value = '';
-  
-  // Putar playlist baru
-  window.playPlaylist(myPlaylists.length - 1);
-};
-
-// Fungsi Hapus (Global)
-window.deletePlaylist = function(index) {
-  if (confirm('Yakin ingin menghapus playlist ini dari daftar?')) {
-    myPlaylists.splice(index, 1);
-    saveToStorage();
-    renderPlaylists();
-  }
-};
-
-// Fungsi Putar (Global)
-window.playPlaylist = function(index) {
-  const playlist = myPlaylists[index];
-  const playerContainer = document.getElementById('mainPlayer');
-  
-  if(playerContainer) {
-    playerContainer.innerHTML = `
-      <iframe style="border-radius:12px" src="${playlist.url}" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-    `;
-    
-    // Scroll smooth ke player
-    const card = document.querySelector('.music-player-card');
-    if(card) card.scrollIntoView({ behavior: 'smooth' });
-  }
-};
-
-// Simpan ke LocalStorage
-function saveToStorage() {
-  localStorage.setItem('laksmitaSpotifyPlaylists', JSON.stringify(myPlaylists));
-}
-
 // Inisialisasi Halaman Musik
-function initMusicPage() {
+document.addEventListener("DOMContentLoaded", function() {
   const container = document.getElementById('playlistListContainer');
   if (!container) return; // Bukan halaman musik, keluar.
+
+  console.log('initMusicPage dipanggil'); // Debug
+
+  // Variabel untuk menyimpan playlist (local scope)
+  let myPlaylists = [];
 
   // --- PLAYLIST DEFAULT (Permanen) ---
   const defaultPlaylists = [
@@ -449,14 +334,177 @@ function initMusicPage() {
       myPlaylists = defaultPlaylists;
   }
 
+  // Fungsi Render
+  function renderPlaylists() {
+    const countBadge = document.getElementById('countBadge');
+    
+    if (!countBadge) return;
+
+    countBadge.innerText = myPlaylists.length;
+    container.innerHTML = '';
+
+    if (myPlaylists.length === 0) {
+      container.innerHTML = '<div class="empty-state-grid">Belum ada playlist tersimpan. Tambahkan di atas!</div>';
+      return;
+    }
+
+    // Loop data playlist
+    myPlaylists.forEach((playlist, index) => {
+      const cardDiv = document.createElement('div');
+      cardDiv.className = 'playlist-card';
+      
+      cardDiv.innerHTML = `
+        <div>
+          <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-music-note-list text-accent fs-4 me-2"></i> <h5>${playlist.name}</h5>
+          </div>
+          <span class="date"><i class="bi bi-calendar3 me-1"></i> ${playlist.date}</span>
+        </div>
+        
+        <div class="actions">
+          <button class="btn btn-outline-accent btn-play-playlist" data-index="${index}">
+            <i class="bi bi-play-fill"></i> Putar
+          </button>
+          <button class="btn btn-outline-danger btn-delete-playlist" data-index="${index}">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      `;
+      container.appendChild(cardDiv);
+    });
+
+    // Tambahkan event listener setelah render
+    document.querySelectorAll('.btn-play-playlist').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const index = parseInt(this.getAttribute('data-index'));
+        playPlaylist(index);
+      });
+    });
+
+    document.querySelectorAll('.btn-delete-playlist').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const index = parseInt(this.getAttribute('data-index'));
+        deletePlaylist(index);
+      });
+    });
+  }
+
+  // Fungsi Tambah Playlist
+  function addPlaylist() {
+    console.log('addPlaylist dipanggil'); // Debug
+    
+    const nameInput = document.getElementById('inputName');
+    const urlInput = document.getElementById('inputUrl');
+    
+    if (!nameInput || !urlInput) {
+      console.error("Input element tidak ditemukan!");
+      return;
+    }
+
+    let name = nameInput.value.trim();
+    let url = urlInput.value.trim();
+
+    console.log('Name:', name, 'URL:', url); // Debug
+
+    if (!url) {
+      alert("Mohon masukkan link Spotify!");
+      return;
+    }
+
+    // Validasi link
+    if (!url.includes('spotify.com')) {
+      alert("Link tidak valid. Pastikan link dari Spotify (contoh: https://open.spotify.com/playlist/...).");
+      return;
+    }
+
+    if (!name) {
+      name = "Playlist Musik " + (myPlaylists.length + 1);
+    }
+
+    // Logic Konversi Link ke Embed
+    let embedUrl = url;
+    if (!url.includes('/embed/')) {
+      embedUrl = url.replace('open.spotify.com/', 'open.spotify.com/embed/');
+    }
+    
+    embedUrl = embedUrl.split('?')[0];
+
+    const newPlaylist = {
+      name: name,
+      url: embedUrl,
+      date: new Date().toLocaleDateString('id-ID')
+    };
+
+    myPlaylists.push(newPlaylist);
+    saveToStorage();
+    renderPlaylists();
+
+    // Reset Form
+    nameInput.value = '';
+    urlInput.value = '';
+    
+    // Putar playlist baru
+    playPlaylist(myPlaylists.length - 1);
+  }
+
+  // Fungsi Hapus
+  function deletePlaylist(index) {
+    if (confirm('Yakin ingin menghapus playlist ini dari daftar?')) {
+      myPlaylists.splice(index, 1);
+      saveToStorage();
+      renderPlaylists();
+    }
+  }
+
+  // Fungsi Putar
+  function playPlaylist(index) {
+    const playlist = myPlaylists[index];
+    const playerContainer = document.getElementById('mainPlayer');
+    
+    if(playerContainer) {
+      playerContainer.innerHTML = `
+        <iframe style="border-radius:12px" src="${playlist.url}" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+      `;
+      
+      // Scroll smooth ke player
+      const card = document.querySelector('.music-player-card');
+      if(card) card.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  // Simpan ke LocalStorage
+  function saveToStorage() {
+    localStorage.setItem('laksmitaSpotifyPlaylists', JSON.stringify(myPlaylists));
+  }
+
   // Render awal
   renderPlaylists();
 
   // Putar yang pertama jika ada
   if (myPlaylists.length > 0) {
-    window.playPlaylist(0);
+    playPlaylist(0);
   }
-}
 
-// Jalankan saat DOM siap
-document.addEventListener("DOMContentLoaded", initMusicPage);
+  // Tambahkan event listener untuk tombol "Simpan" dengan ID
+  const btnSavePlaylist = document.getElementById('btnSavePlaylist');
+  if (btnSavePlaylist) {
+    btnSavePlaylist.addEventListener('click', function(e) {
+      e.preventDefault();
+      addPlaylist();
+    });
+    console.log('Event listener untuk tombol Simpan ditambahkan'); // Debug
+  } else {
+    console.error('Tombol btnSavePlaylist tidak ditemukan!');
+  }
+
+  // Support Enter key pada input URL
+  const urlInput = document.getElementById('inputUrl');
+  if (urlInput) {
+    urlInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addPlaylist();
+      }
+    });
+  }
+});
