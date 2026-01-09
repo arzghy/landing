@@ -46,12 +46,9 @@ document.addEventListener("DOMContentLoaded", function() {
     if (note) {
       // Tampilkan Data
       document.getElementById('detailTitle').textContent = note.title;
-      document.getElementById('detailContent').textContent = note.content;
+      // Di sini kita menampilkan ISI LENGKAP (content), bukan deskripsi
+      document.getElementById('detailContent').textContent = note.content; 
       document.getElementById('detailDate').textContent = formatDate(note.timestamp);
-      
-      // Kategori Badge
-      const catBadge = document.getElementById('detailCategory');
-      catBadge.textContent = note.category || 'Umum';
       
       // Tampilkan Container
       detailContainer.style.display = 'block';
@@ -94,64 +91,44 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // --- Render List ---
     function renderList() {
-      // Filter Kategori (Opsional, jika masih dipakai)
-      const urlParams = new URLSearchParams(window.location.search);
-      const activeCategory = urlParams.get('kategori');
-      
-      // Navigasi UI update (jika ada)
-      document.querySelectorAll('.nav-pills .nav-link').forEach(el => el.classList.remove('active'));
-      if(activeCategory) {
-          const btn = document.getElementById(`link-${activeCategory}`);
-          if(btn) btn.classList.add('active');
-      } else {
-          const btnAll = document.querySelector('.active-all');
-          if(btnAll) btnAll.classList.add('active');
-      }
-
-      // Filter Data
-      let filtered = activeCategory ? myNotes.filter(n => n.category === activeCategory) : myNotes;
-
       // Sort Date Descending
-      filtered.sort((a, b) => b.timestamp - a.timestamp);
+      myNotes.sort((a, b) => b.timestamp - a.timestamp);
 
       // Render HTML
       listContainer.innerHTML = '';
-      document.getElementById('notesCount').textContent = filtered.length;
+      document.getElementById('notesCount').textContent = myNotes.length;
 
-      if (filtered.length === 0) {
+      if (myNotes.length === 0) {
         listContainer.innerHTML = `<div class="col-12 text-center py-5 text-muted">Belum ada catatan.</div>`;
         return;
       }
 
-      filtered.forEach((note, index) => {
+      myNotes.forEach((note) => {
         const col = document.createElement('div');
         col.className = 'col-lg-4 col-md-6';
         
-        // Warna badge
-        let badgeColor = 'bg-secondary';
-        if(note.category === 'Pribadi') badgeColor = 'bg-success';
-        if(note.category === 'Pekerjaan') badgeColor = 'bg-primary';
-        if(note.category === 'Ide') badgeColor = 'bg-warning text-dark';
-
+        // Disini kita menampilkan Judul dan DESKRIPSI SINGKAT
+        // Isi Lengkap (content) tidak ditampilkan disini
         col.innerHTML = `
           <div class="note-card h-100 position-relative" style="cursor: pointer;">
             <div class="note-header">
                <i class="bi bi-journal-text text-white fs-1 opacity-50"></i>
             </div>
             <div class="note-body">
-              <span class="badge ${badgeColor} mb-2">${note.category || 'Umum'}</span>
-              <h5 class="note-title text-truncate">${note.title}</h5>
-              <p class="note-excerpt" style="color:#666; font-size:0.9rem; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">
-                ${note.content}
+              <h5 class="note-title text-truncate fw-bold mb-2">${note.title}</h5>
+              <p class="note-desc text-muted mb-3" style="font-size:0.95rem; min-height:40px;">
+                ${note.description || '-'}
               </p>
-              <small class="text-muted"><i class="bi bi-clock"></i> ${formatDateShort(note.timestamp)}</small>
+              <div class="border-top pt-2">
+                 <small class="text-secondary"><i class="bi bi-clock"></i> ${formatDateShort(note.timestamp)}</small>
+              </div>
             </div>
           </div>
         `;
         
         listContainer.appendChild(col);
 
-        // --- KLIK KARTU = PINDAH HALAMAN ---
+        // --- KLIK KARTU = PINDAH HALAMAN KE DETAIL (UNTUK LIHAT ISI) ---
         col.querySelector('.note-card').addEventListener('click', () => {
           window.location.href = `detail-catatan.html?id=${note.id}`;
         });
@@ -163,25 +140,27 @@ document.addEventListener("DOMContentLoaded", function() {
     if (btnSave) {
       btnSave.addEventListener('click', () => {
         const title = document.getElementById('noteTitle').value.trim();
+        const description = document.getElementById('noteDescription').value.trim(); // Ambil Deskripsi
         const content = document.getElementById('noteContent').value.trim();
-        const category = document.getElementById('noteCategory').value;
 
-        if (!title || !content) { alert('Isi data dengan lengkap'); return; }
+        if (!title || !content || !description) { alert('Mohon isi Judul, Deskripsi, dan Isi Catatan.'); return; }
 
         if (editingId) {
           // Update Existing
           const idx = myNotes.findIndex(n => n.id == editingId);
           if (idx !== -1) {
             myNotes[idx].title = title;
+            myNotes[idx].description = description; // Simpan Deskripsi
             myNotes[idx].content = content;
-            myNotes[idx].category = category;
             myNotes[idx].timestamp = Date.now();
           }
         } else {
           // Create New
           myNotes.push({
             id: Date.now(),
-            title, content, category,
+            title, 
+            description, // Simpan Deskripsi
+            content, 
             timestamp: Date.now()
           });
         }
@@ -224,8 +203,8 @@ document.addEventListener("DOMContentLoaded", function() {
       if (targetNote && formModal) {
         editingId = editId;
         document.getElementById('noteTitle').value = targetNote.title;
+        document.getElementById('noteDescription').value = targetNote.description || ''; // Load Deskripsi
         document.getElementById('noteContent').value = targetNote.content;
-        document.getElementById('noteCategory').value = targetNote.category || 'Pribadi';
         document.getElementById('modalFormTitle').textContent = "Edit Catatan";
         
         // Buka Modal Otomatis
@@ -233,8 +212,8 @@ document.addEventListener("DOMContentLoaded", function() {
         
         // Handle saat modal ditutup user (batal edit), bersihkan URL
         document.getElementById('modalFormNote').addEventListener('hidden.bs.modal', () => {
-           if(editingId) { // Jika batal, kembalikan user ke detail atau list
-             // Opsional: window.history.pushState({}, document.title, "catatan.html");
+           if(editingId) { 
+             // Logic when closed without saving if necessary
            }
         }, {once:true});
       }

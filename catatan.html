@@ -52,15 +52,6 @@
       display: flex; align-items: center; justify-content: center;
     }
     .note-body { padding: 20px; }
-    
-    /* Nav Pills */
-    .nav-pills .nav-link {
-      color: #555; border-radius: 20px;
-      padding: 8px 20px; margin: 0 5px; font-weight: 500;
-    }
-    .nav-pills .nav-link.active {
-      background-color: var(--accent-color, #1977cc); color: white;
-    }
   </style>
 </head>
 
@@ -104,17 +95,6 @@
     <section id="notes-section" class="section">
       <div class="container">
         
-        <div class="row mb-5" data-aos="fade-up">
-            <div class="col-12">
-                <div class="nav nav-pills justify-content-center">
-                    <a href="catatan.html" class="nav-link active-all">Semua</a>
-                    <a href="catatan.html?kategori=Pribadi" class="nav-link" id="link-Pribadi">Pribadi</a>
-                    <a href="catatan.html?kategori=Pekerjaan" class="nav-link" id="link-Pekerjaan">Pekerjaan</a>
-                    <a href="catatan.html?kategori=Ide" class="nav-link" id="link-Ide">Ide</a>
-                </div>
-            </div>
-        </div>
-
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h4 class="mb-0 fs-5">Daftar Catatan (<span id="notesCount">0</span>)</h4>
         </div>
@@ -140,20 +120,18 @@
         <div class="modal-body">
           <form id="noteForm">
             <div class="mb-3">
-                <label for="noteCategory" class="form-label">Kategori</label>
-                <select class="form-select" id="noteCategory">
-                    <option value="Pribadi">Pribadi</option>
-                    <option value="Pekerjaan">Pekerjaan</option>
-                    <option value="Ide">Ide</option>
-                </select>
-            </div>
-            <div class="mb-3">
               <label for="noteTitle" class="form-label">Judul</label>
               <input type="text" class="form-control" id="noteTitle" required>
             </div>
+            
             <div class="mb-3">
-              <label for="noteContent" class="form-label">Isi Catatan</label>
-              <textarea class="form-control" id="noteContent" rows="6" required></textarea>
+              <label for="noteDescription" class="form-label">Deskripsi Singkat</label>
+              <textarea class="form-control" id="noteDescription" rows="2" placeholder="Tampil di halaman depan..." required></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="noteContent" class="form-label">Isi Lengkap Catatan</label>
+              <textarea class="form-control" id="noteContent" rows="6" placeholder="Tampil saat diklik..." required></textarea>
             </div>
           </form>
         </div>
