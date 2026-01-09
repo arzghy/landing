@@ -46,7 +46,15 @@ document.addEventListener("DOMContentLoaded", function() {
     if (note) {
       // Tampilkan Data
       document.getElementById('detailTitle').textContent = note.title;
-      // Di sini kita menampilkan ISI LENGKAP (content), bukan deskripsi
+      
+      // --- PERUBAHAN DI SINI: Menampilkan Deskripsi ---
+      const descElement = document.getElementById('detailDesc');
+      if (descElement) {
+        descElement.textContent = note.description || 'Tidak ada deskripsi singkat.';
+      }
+      // ------------------------------------------------
+
+      // Di sini kita menampilkan ISI LENGKAP (content)
       document.getElementById('detailContent').textContent = note.content; 
       document.getElementById('detailDate').textContent = formatDate(note.timestamp);
       
@@ -55,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
       // 3. Tombol Hapus
       document.getElementById('btnDeleteDetail').addEventListener('click', () => {
-        if (confirm('Yakin ingin menghapus catatan ini selamanya?')) {
+        if (confirm('Yakin ingin menghapus catatan ini selamanya sayang?')) {
           myNotes = myNotes.filter(n => n.id != noteId);
           saveToLocalStorage();
           window.location.href = 'catatan.html'; // Redirect balik
@@ -99,7 +107,7 @@ document.addEventListener("DOMContentLoaded", function() {
       document.getElementById('notesCount').textContent = myNotes.length;
 
       if (myNotes.length === 0) {
-        listContainer.innerHTML = `<div class="col-12 text-center py-5 text-muted">Belum ada catatan.</div>`;
+        listContainer.innerHTML = `<div class="col-12 text-center py-5 text-muted">Belum ada catatan sayang. Yuk buat satu!</div>`;
         return;
       }
 
@@ -108,7 +116,6 @@ document.addEventListener("DOMContentLoaded", function() {
         col.className = 'col-lg-4 col-md-6';
         
         // Disini kita menampilkan Judul dan DESKRIPSI SINGKAT
-        // Isi Lengkap (content) tidak ditampilkan disini
         col.innerHTML = `
           <div class="note-card h-100 position-relative" style="cursor: pointer;">
             <div class="note-header">
@@ -143,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const description = document.getElementById('noteDescription').value.trim(); // Ambil Deskripsi
         const content = document.getElementById('noteContent').value.trim();
 
-        if (!title || !content || !description) { alert('Mohon isi Judul, Deskripsi, dan Isi Catatan.'); return; }
+        if (!title || !content || !description) { alert('Sayang, judul, deskripsi, dan isinya diisi dulu ya!'); return; }
 
         if (editingId) {
           // Update Existing
@@ -184,7 +191,7 @@ document.addEventListener("DOMContentLoaded", function() {
       fab.addEventListener('click', () => {
         editingId = null;
         document.getElementById('noteForm').reset();
-        document.getElementById('modalFormTitle').textContent = "Tambah Catatan Baru";
+        document.getElementById('modalFormTitle').textContent = "Buat Catatan Baru ❤️";
         
         // Bersihkan URL query param agar bersih saat tambah baru
         window.history.pushState({}, document.title, window.location.pathname);
@@ -210,11 +217,9 @@ document.addEventListener("DOMContentLoaded", function() {
         // Buka Modal Otomatis
         formModal.show();
         
-        // Handle saat modal ditutup user (batal edit), bersihkan URL
+        // Handle saat modal ditutup user (batal edit)
         document.getElementById('modalFormNote').addEventListener('hidden.bs.modal', () => {
-           if(editingId) { 
-             // Logic when closed without saving if necessary
-           }
+           // Opsional
         }, {once:true});
       }
     }
