@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Detail Catatan - Laksmita</title>
+  
+  <link href="assets/img/favicon.png" rel="icon">
+  
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link href="assets/css/main.css" rel="stylesheet">
+
+  <style>
+    /* Styling khusus halaman detail */
+    .detail-header-bg {
+      background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%);
+      padding: 60px 0 40px;
+      color: white;
+      margin-top: 80px; /* Offset fixed header */
+      border-radius: 0 0 30px 30px;
+      margin-bottom: 40px;
+    }
+    .detail-content {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #333;
+      white-space: pre-wrap; /* Agar enter/paragraf terbaca */
+      min-height: 300px;
+    }
+    .meta-info {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header id="header" class="header fixed-top">
+    <div class="branding d-flex align-items-cente">
+      <div class="container position-relative d-flex align-items-center justify-content-between">
+        <a href="index.html" class="logo d-flex align-items-center">
+          <h1 class="sitename">Laksmita 🐋</h1>
+        </a>
+        <nav id="navmenu" class="navmenu">
+          <ul>
+            <li><a href="catatan.html" class="active">Kembali ke Daftar</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    
+    <div id="noteDetailContainer" style="display: none;">
+        
+        <div class="detail-header-bg text-center">
+            <div class="container">
+                <span id="detailCategory" class="badge bg-light text-primary mb-3 px-3 py-2 rounded-pill">Kategori</span>
+                <h1 id="detailTitle" class="fw-bold display-6 mb-3">Judul Catatan</h1>
+                <div class="meta-info">
+                    <i class="bi bi-calendar3 me-2"></i> <span id="detailDate">Tanggal</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mb-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm p-4 p-md-5">
+                        <div id="detailContent" class="detail-content">
+                            </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="catatan.html" class="btn btn-outline-secondary rounded-pill px-4">
+                                <i class="bi bi-arrow-left"></i> Kembali
+                            </a>
+                            <div class="d-flex gap-2">
+                                <button id="btnDeleteDetail" class="btn btn-outline-danger rounded-pill px-4">
+                                    <i class="bi bi-trash"></i> Hapus
+                                </button>
+                                <button id="btnEditDetail" class="btn btn-primary rounded-pill px-4">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="noteNotFound" class="container text-center py-5" style="display: none; margin-top: 100px;">
+        <i class="bi bi-search display-1 text-muted"></i>
+        <h3 class="mt-3">Catatan tidak ditemukan</h3>
+        <p class="text-muted">Mungkin catatan telah dihapus atau link salah.</p>
+        <a href="catatan.html" class="btn btn-primary mt-3">Kembali ke Daftar</a>
+    </div>
+
+  </main>
+
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/main.js"></script>
+  
+  <script src="assets/js/notes.js"></script>
+
+</body>
+</html>
